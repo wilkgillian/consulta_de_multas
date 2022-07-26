@@ -27,7 +27,10 @@ for index,row in planilha_formatada.iterrows():
     driver.find_element(By.ID, "input_renavam").send_keys(int(renavan))
     time.sleep(1)
     driver.find_element(By.XPATH, "//*[@id='formVeiculo']/div[4]/input[2]").click()
-# driver.find_element(By.XPATH, "//*[@id='formVeiculo']/div[4]/input[2]").click()
+    driver.switch_to.window(driver.window_handles[1])
+    # assert "DetranNet - Extrato do Veículo de PLACA "+placa+"" in driver.title
+    select = Select(driver.find_element(By.ID, "cmbTipoDebito"))
+    select.select_by_visible_text("Multas").click()
 # # time.sleep(1)
 # driver.switch_to.window(driver.window_handles[1])
 # print("Linha "+str(index)+" Coluna "+str(row)+" \n")
