@@ -1,4 +1,3 @@
-from locale import windows_locale
 import pyautogui
 import time
 from selenium import webdriver
@@ -6,7 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from datetime import datetime
-import asyncio
+import urllib.request
 from playwright.sync_api import sync_playwright
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -27,7 +26,10 @@ for index,row in planilha_formatada.iterrows():
       try:
         placa = row["PLACA"]
         renavan = row["RENAVAN"]
-        page.locator('.closer').click()
+        try:
+          page.locator('.closer').click()
+        except:
+          continue
         time.sleep(1)
         page.locator('#input_placa').fill(str(placa))
         page.locator('#input_renavam').fill(str(renavan).replace(".0",""))
@@ -42,17 +44,21 @@ for index,row in planilha_formatada.iterrows():
           pyautogui.press('down')
           time.sleep(1)
           pyautogui.press('enter')
-          # newTab.locator('select#cmbTipoDebito').select_option('Multas')
           time.sleep(2)
-          # select.locator('//*[@id="cmbTipoDebito"]/option[2]').click()
-          # select.select_option('Multas')
-          # locator('//*[@id="cmbTipoDebito"]').click()
+          url = newTab.inner_html('html')
           print("Existem dados")
-          # tabela = newTab.locator('//*[@id="Integral"]/table/tbody')
-          # content = tabela.get_attribute('outerHtml')
-          # soup = BeautifulSoup(content, 'html.parser')
-          # print(tabela)
-          # time.sleep(1)
+          soup = BeautifulSoup(url, 'html.parser')
+          # print('\n --- soup criado --- \n')
+          # time.sleep(2)
+          # print(soup.prettify())
+          itens = soup.find('td')
+          # # content = itens.text.strip()
+          # print(itens)
+          # debitos = itens.find_all('td', attrs={'class': 'HeaderGrid'})
+          # with pd.ExcelWriter("C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx") as writer:
+          #   to_excel(writer)
+          print('\n --- debitos identificados --- \n')
+          print(itens)
           browser.close()
         except: 
           print("Não existem dados")
