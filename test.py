@@ -1,3 +1,4 @@
+from numbers import Integral
 import pyautogui
 import time
 from selenium import webdriver
@@ -45,20 +46,34 @@ for index,row in planilha_formatada.iterrows():
           time.sleep(1)
           pyautogui.press('enter')
           time.sleep(2)
-          url = newTab.inner_html('html')
+          url = newTab.inner_html('form')
           print("Existem dados")
           soup = BeautifulSoup(url, 'html.parser')
-          # print('\n --- soup criado --- \n')
-          # time.sleep(2)
-          # print(soup.prettify())
-          itens = soup.find('td')
+          print('\n --- soup criado --- \n')
+          debitos = soup.find_all('td', attrs={'class': False, 'width': False})
+          print('\n --- debitos identificados --- \n')
+          print(debitos)
+          results = debitos.td.get_text()
+          print("\n\n\n ----|||||||------ \n\n\n"+results+"")
           # # content = itens.text.strip()
           # print(itens)
           # debitos = itens.find_all('td', attrs={'class': 'HeaderGrid'})
           # with pd.ExcelWriter("C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx") as writer:
           #   to_excel(writer)
-          print('\n --- debitos identificados --- \n')
-          print(itens)
+          # for debito in debitos:
+          #   ocorrencia = debito.find('td', attrs={}).get_text().strip()
+          #   print('\n ---------- ||||||| --------- \n')
+          #   print(ocorrencia)
+
+          # convertItens = itens.inner_html('td')
+          # print('\n\n\n ---------- ||||||| --------- \n\n\n')
+          # print(convertItens)
+          # newSoup =  BeautifulSoup(convertItens, 'html.parser')
+          # print('\n --- novo soup criado --- \n')
+          # print(convertItens)
+          # ocorrencias =  newSoup.find('td', attrs={})
+          # print('\n --- ocorrencias localizadas --- \n')
+          # print(ocorrencias)
           browser.close()
         except: 
           print("Não existem dados")
@@ -66,6 +81,7 @@ for index,row in planilha_formatada.iterrows():
         browser.close()
       except:
         print("Consulta concluída")
+
         continue
       browser.close()   
 # driver = webdriver.Chrome()
