@@ -1,4 +1,5 @@
 from numbers import Integral
+from unittest import result
 import pyautogui
 import time
 from selenium import webdriver
@@ -52,9 +53,14 @@ for index,row in planilha_formatada.iterrows():
           print('\n --- soup criado --- \n')
           debitos = soup.find_all('td', attrs={'class': False, 'width': False})
           print('\n --- debitos identificados --- \n')
+          print(len(debitos))
           print(debitos)
-          results = debitos.td.get_text()
-          print("\n\n\n ----|||||||------ \n\n\n"+results+"")
+          i=0
+          while i <= len(debitos):
+            print('\n\n\n ---- entrou no while ----\n\n\n')
+            results = debitos[i].contents[i].text
+            i+=1
+            print("\n\n\n ----|||||||------ \n\n\n"+results+"")
           # # content = itens.text.strip()
           # print(itens)
           # debitos = itens.find_all('td', attrs={'class': 'HeaderGrid'})
@@ -62,6 +68,7 @@ for index,row in planilha_formatada.iterrows():
           #   to_excel(writer)
           # for debito in debitos:
           #   ocorrencia = debito.find('td', attrs={}).get_text().strip()
+
           #   print('\n ---------- ||||||| --------- \n')
           #   print(ocorrencia)
 
