@@ -1,4 +1,5 @@
 from numbers import Integral
+from operator import iconcat
 from unittest import result
 import pyautogui
 import time
@@ -55,12 +56,18 @@ for index,row in planilha_formatada.iterrows():
           print('\n --- debitos identificados --- \n')
           print(len(debitos))
           print(debitos)
-          i=0
-          while i <= len(debitos):
-            print('\n\n\n ---- entrou no while ----\n\n\n')
-            results = debitos[i].contents[i].text
-            i+=1
-            print("\n\n\n ----|||||||------ \n\n\n"+results+"")
+          iContent=0
+          i = 0
+          while iContent < len(debitos):
+            print('\n ---- entrou no while ----\n')
+            results = debitos[iContent].contents[1].text
+            # print("\n ----|||||||------ \nDebito n° "+i+" -> "+results+"")
+            print(iContent)
+            # print(i)
+            print(results)
+            iContent+=1
+            # i+=1
+            # iDebito+=1
           # # content = itens.text.strip()
           # print(itens)
           # debitos = itens.find_all('td', attrs={'class': 'HeaderGrid'})
