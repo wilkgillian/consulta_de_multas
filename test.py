@@ -7,7 +7,6 @@ from bs4 import BeautifulSoup
 import re
 import openpyxl
 
-
 dataAtual = datetime.today()
 formatData = dataAtual.strftime("%d/%m/%Y").replace("/", "-")
 planilha = pd.read_excel("C:/Users/wilk.silva/Downloads/Controle - Frota.xlsx", "Vencimento Documentação", usecols=[8, 9])
@@ -48,30 +47,37 @@ for index,row in planilha_formatada.iterrows():
           print('\n --- soup criado --- \n')
           debitos = soup.find_all('td', attrs={'class': False, 'width': False})
           print('\n --- debitos identificados --- \n')
-          print(len(debitos))
           print(debitos)
           iContent=0
+          placaArray = [placa]
+          placaParte1 = placa[0:3]
+          placaParte2 =  placa[3:]
+          placaReplaced = placaParte1+"-"+placaParte2
           book = openpyxl.load_workbook(filename="C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx")
           book.create_sheet("Multas")
           page_multas = book['Multas']
           while iContent < len(debitos):
-            print('\n ---- entrou no while ----\n')
             results = debitos[iContent].contents[1].text
-            print(iContent)
             if re.search("Licenciamento", results):
-                print("Não é uma multa")
+                print("\n\nNão é uma multa ------->>> "+results+"")
             else:
-                page_multas.append([placa, renavan, results])
+                page_multas.append([placaReplaced, renavan, results])
                 book.save(filename="C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx")
-                print(results)
+                print("\n\nMulta identificada ------->>> "+results+"")
+                time.sleep(1)
+                newTab.goto("http://www16.itrack.com.br/cmatrix/controlemonitoramento")
+                time.sleep(1)
+                newTab.locator("/html/body/div/table/tbody/tr[2]/td/div/form/div[1]/table/tbody/tr[3]/td[2]/input").fill("GEAD")
+                time.sleep(1)
+                newTab.locator("/html/body/div/table/tbody/tr[2]/td/div/form/div[1]/table/tbody/tr[4]/td[2]/input").fill("33312976")
+                time.sleep(1)
+                newTab.locator("/html/body/div/table/tbody/tr[2]/td/div/form/div[1]/table/tbody/tr[6]/td/button").click()
+                time.sleep(5)
             iContent+=1
-          browser.close()
         except: 
-          print("Não existem dados")
-          continue 
-        browser.close()
+          print("Não existem dados") 
+          continue
       except:
         print("Consulta concluída")
-
-        continue
-      browser.close()   
+        continue  
+      browser.close()
