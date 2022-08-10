@@ -67,7 +67,13 @@ for index,row in planilha_formatada.iterrows():
                 print("\n\nData -->>"+str(findData)+" hora -->> "+str(findHour)+"")
                 data_hour_for_connecta = str(findData)+" "+str(findHour)
                 print(data_hour_for_connecta)
-                hora = str(findHour).replace("%d%d:%d%d", "%d=%d"+1"") #parei aqui convertendo a data
+                convertHour = list(findHour)
+                print("Hora em array --> "+convertHour+"\n")
+                convertHour1 = convertHour[0:1]
+                print("Slice da hora --> "+convertHour1+"\n")
+                sumHour = int(convertHour1) +1
+                print("Hora adicionada + 1 --> "+sumHour+"\n")
+                # hora_mais_um = str(findHour).replace("%d%d", ""%d%d":+1")
                 connecta = context.new_page()
                 connecta.goto("http://www16.itrack.com.br/cmatrix/controlemonitoramento")
                 connecta.locator("input[name='usuario']").fill("GEAD")
