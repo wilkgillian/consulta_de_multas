@@ -1,3 +1,5 @@
+import ast
+from dataclasses import replace
 import pyautogui
 import time
 from datetime import datetime
@@ -14,7 +16,7 @@ planilha.to_excel("C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xls
 planilha_formatada = pd.read_excel("C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx")
 for index,row in planilha_formatada.iterrows():
     with sync_playwright() as p:
-      browser = p.chromium.launch(headless=False, timeout=5000)
+      browser = p.chromium.launch(headless=False, timeout=3000)
       context = browser.new_context()
       page = context.new_page()
       page.goto("https://www.detran.mt.gov.br/")
@@ -67,13 +69,22 @@ for index,row in planilha_formatada.iterrows():
                 print("\n\nData -->>"+str(findData)+" hora -->> "+str(findHour)+"")
                 data_hour_for_connecta = str(findData)+" "+str(findHour)
                 print(data_hour_for_connecta)
-                convertHour = list(findHour)
-                print("Hora em array --> "+convertHour+"\n")
-                convertHour1 = convertHour[0:1]
-                print("Slice da hora --> "+convertHour1+"\n")
-                sumHour = int(convertHour1) +1
-                print("Hora adicionada + 1 --> "+sumHour+"\n")
-                # hora_mais_um = str(findHour).replace("%d%d", ""%d%d":+1")
+                convertHour = str(findHour)
+                newHour = convertHour.replace(":", "")
+                aspsHour = newHour.replace(newHour,"'"+newHour+"'")
+                # arrayHour = aspsHour.split()
+                # print("Hora em array --> "+arrayHour+"\n")
+                convertHour1 = aspsHour[1:3]
+                secondPartHour = aspsHour[3:5]
+                print("Slice da hora parte final--> '"+secondPartHour+"'\n")
+                print(type(convertHour1))
+                sumHour = int(convertHour1)+1
+                print(type(sumHour))
+                print(sumHour)
+                horaAidicionada = str(sumHour)+":"+str(secondPartHour)
+                print(horaAidicionada)
+                data_hour_adicionada = str(findData)+ " " +str(horaAidicionada)
+                print(data_hour_adicionada)
                 connecta = context.new_page()
                 connecta.goto("http://www16.itrack.com.br/cmatrix/controlemonitoramento")
                 connecta.locator("input[name='usuario']").fill("GEAD")
@@ -98,8 +109,24 @@ for index,row in planilha_formatada.iterrows():
                 pyautogui.moveTo(x= filtro.left+50, y= filtro.top+45)
                 pyautogui.click()
                 time.sleep(2)
-                connecta.locator("//*[@id='dtI']").fill(data_hour_for_connecta)
-                connecta.locator("//*[@id='dtF']").fill()
+                dataIniti = connecta.locator("//*[@id='dtI']").click()
+                pyautogui.hotkey('ctrl','a')
+                pyautogui.press('del')
+                pyautogui.write(data_hour_for_connecta)
+                time.sleep(1)
+                pyautogui.press('Tab')
+                time.sleep(2)
+                dataFinal = connecta.locator("//*[@id='dtF']").click()
+                pyautogui.hotkey('ctrl','a')
+                pyautogui.press('del')
+                pyautogui.write(data_hour_adicionada)
+                time.sleep(1)
+                pyautogui.press('Tab')
+                time.sleep(2)
+                connecta.locator("//*[@id='formfiltro']/fieldset/div/button[2]").click()
+                time.sleep(2)
+                connecta.locator("//*[@id='li-imprimir']/a").click()
+                time.sleep(5)
             else:
               print("nada")
                 # page_multas.append([placaReplaced, renavan, results])
