@@ -1,0 +1,8 @@
+# dependencies
+/base_de_dados
+/consultas
+
+#files
+/.env.local
+/.exe
+

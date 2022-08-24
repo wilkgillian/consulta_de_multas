@@ -10,12 +10,12 @@ import openpyxl
 t1 = time.time()
 dataAtual = datetime.today()
 formatData = dataAtual.strftime("%d/%m/%Y").replace("/", "-")
-planilha = pd.read_excel("C:/Users/wilk.silva/Downloads/Controle - FrotaO.xlsx", "Vencimento Documentação", skiprows=1, usecols=['PLACA', 'RENAVAN'])
-planilha.to_excel("C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx")
-planilha_formatada = pd.read_excel("C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx")
+planilha = pd.read_excel("base_de_dados/Controle - Frota.xlsx", "Vencimento Documentação", skiprows=1, usecols=['PLACA', 'RENAVAN'])
+planilha.to_excel("consultas/Detran/Consulta dia "+formatData+".xlsx")
+planilha_formatada = pd.read_excel("consultas/Detran/Consulta dia "+formatData+".xlsx")
 for index,row in planilha_formatada.iterrows():
     with sync_playwright() as p:
-      browser = p.chromium.launch(headless=False, timeout=1000)
+      browser = p.chromium.launch(headless=False, timeout=5000)
       context = browser.new_context()
       page = context.new_page()
       page.goto("https://www.detran.mt.gov.br/")
@@ -35,6 +35,7 @@ for index,row in planilha_formatada.iterrows():
           time.sleep(1)
           localizador = pyautogui.locateOnScreen('debitos.png', confidence=0.9)
           if (localizador == None):
+           time.sleep(1)
            select = newTab.locator('//*[@id="cmbTipoDebito"]').click()
            pyautogui.press('down')
            pyautogui.press('down')
@@ -42,6 +43,7 @@ for index,row in planilha_formatada.iterrows():
            time.sleep(1)
            infracoes = pyautogui.locateOnScreen('infracoes.png', confidence=0.9)
            if (infracoes == None):
+            time.sleep(1)
             url = newTab.inner_html('//*[@id="div_servicos_Autuacoes"]/table/tbody/tr[2]/td[2]')
             print("Existem dados")
             soup = BeautifulSoup(url, 'html.parser')
@@ -53,7 +55,9 @@ for index,row in planilha_formatada.iterrows():
             placaParte1 = placa[0:3]
             placaParte2 =  placa[3:]
             placaReplaced = placaParte1+"-"+placaParte2
-            book = openpyxl.load_workbook(filename="C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx")
+            time.sleep(1)
+            book = openpyxl.load_workbook(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")
+            time.sleep(1)
             book.create_sheet("Multas")
             page_multas = book['Multas']
             while iContent < len(debitos):
@@ -68,17 +72,25 @@ for index,row in planilha_formatada.iterrows():
                   aspsHour = newHour.replace(newHour,"'"+newHour+"'")
                   convertHour1 = aspsHour[1:3]
                   secondPartHour = aspsHour[3:5]
-                  if (re.compile(convertHour1).match("00")):
-                    acres = "0.1"
+                  if (int(convertHour1) == 0):
+                    acres = '0.1'
                     sumHour = int(convertHour1)+float(acres)
                   else:
-                    sumHour = int(convertHour1)+1
+                   hora_acres = int(convertHour1)+1
+                   if hora_acres < 10:
+                      sumHour = '0'+str(hora_acres)
+                   else:
+                      sumHour = hora_acres
                   horaAidicionada = str(sumHour)+":"+str(secondPartHour)
+                  print(horaAidicionada)
                   data_hour_adicionada = str(findData)+ " " +str(horaAidicionada)
+                  time.sleep(1)
                   connecta = context.new_page()
                   connecta.goto("http://www16.itrack.com.br/cmatrix/controlemonitoramento")
+                  time.sleep(1)
                   connecta.locator("input[name='usuario']").fill("GEAD")
                   connecta.locator("input[name='senha']").fill("33312976")
+                  time.sleep(1)
                   connecta.locator("button[name='Submit']").click()
                   connecta.locator("//*[@id='tabelaMenu']/tbody/tr[1]/td/ul/li[3]/a").hover()
                   connecta.locator("//*[@id='tabelaMenu']/tbody/tr[1]/td/ul/li[3]/ul/li[1]/a").hover()
@@ -97,22 +109,26 @@ for index,row in planilha_formatada.iterrows():
                   pyautogui.click()
                   time.sleep(1)
                   dataIniti = connecta.locator("//*[@id='dtI']").click()
+                  time.sleep(1)
                   pyautogui.hotkey('ctrl','a')
                   pyautogui.press('del')
                   pyautogui.write(data_hour_for_connecta)
                   time.sleep(1)
                   pyautogui.press('Tab')
+                  time.sleep(1)
                   dataFinal = connecta.locator("//*[@id='dtF']").click()
                   pyautogui.hotkey('ctrl','a')
                   pyautogui.press('del')
                   pyautogui.write(data_hour_adicionada)
                   time.sleep(1)
                   pyautogui.press('Tab')
+                  time.sleep(1)
                   connecta.locator("//*[@id='formfiltro']/fieldset/div/button[2]").click()
                   try:
                     time.sleep(1)
                     identificado = pyautogui.locateOnScreen('sem_dados.png', confidence=0.9)
                     if(identificado == None):
+                      time.sleep(1)
                       newUrl = connecta.inner_html("//body/table/tbody/tr[5]/td/table/tbody/tr/td/table/tbody/tr[@class='even']")
                       newSoup = BeautifulSoup(newUrl, 'html.parser')
                       nome =  newSoup.find_all('td', attrs={'style': 'text-align: center'}, string=re.compile("[^a-z]"))
@@ -122,22 +138,27 @@ for index,row in planilha_formatada.iterrows():
                        if re.search("[a-zA-Z]", infrator):
                          nomeInfrator = infrator
                        contador+=1
+                      time.sleep(1)
                       page_multas.append([placaReplaced, renavan, results, nomeInfrator])
-                      book.save(filename="C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx")   
+                      book.save(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")   
                     else:
                       print('Condutor não identificado\n')
                       condutor = 'Condutor não identificado'
+                      time.sleep(1)
                       page_multas.append([placaReplaced, renavan, results, condutor])
-                      book.save(filename="C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx")
+                      book.save(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")
                       print('Dados salvos sem o condutor')
                   except:
                     continue
+                  connecta.locator("//*[@id='li-sair']/a").click()
+                  connecta.close()
               iContent+=1
         except:  
           try:
             time.sleep(1)
             localizador = pyautogui.locateOnScreen('debitos.png', confidence=0.9)
             if (localizador == None):
+             time.sleep(1)
              select = newTab.locator('//*[@id="cmbTipoDebito"]').click()
              pyautogui.press('down')
              pyautogui.press('down')
@@ -145,6 +166,7 @@ for index,row in planilha_formatada.iterrows():
              time.sleep(1)
              infracoes = pyautogui.locateOnScreen('infracoes.png', confidence=0.9)
              if (infracoes == None):
+              time.sleep(1)
               url = newTab.inner_html('//*[@id="div_servicos_Multas"]/table/tbody/tr[2]/td[2]')
               print("Existem dados")
               soup = BeautifulSoup(url, 'html.parser')
@@ -156,7 +178,8 @@ for index,row in planilha_formatada.iterrows():
               placaParte1 = placa[0:3]
               placaParte2 =  placa[3:]
               placaReplaced = placaParte1+"-"+placaParte2
-              book = openpyxl.load_workbook(filename="C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx")
+              time.sleep(1)
+              book = openpyxl.load_workbook(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")
               book.create_sheet("Multas")
               page_multas = book['Multas']
               while iContent < len(debitos):
@@ -171,17 +194,24 @@ for index,row in planilha_formatada.iterrows():
                    aspsHour = newHour.replace(newHour,"'"+newHour+"'")
                    convertHour1 = aspsHour[1:3]
                    secondPartHour = aspsHour[3:5]
-                   if (re.compile(convertHour1).match("00")):
-                     acres = "0.1"
-                     sumHour = int(convertHour1)+float(acres)
+                   if (int(convertHour1) == 0):
+                    acres = '0.1'
+                    sumHour = int(convertHour1)+float(acres)
                    else:
-                     sumHour = int(convertHour1)+1
+                    hora_acres = int(convertHour1)+1
+                    if hora_acres < 10:
+                      sumHour = '0'+str(hora_acres)
+                    else:
+                      sumHour = hora_acres
                    horaAidicionada = str(sumHour)+":"+str(secondPartHour)
                    data_hour_adicionada = str(findData)+ " " +str(horaAidicionada)
+                   time.sleep(1)
                    connecta = context.new_page()
+                   time.sleep(1)
                    connecta.goto("http://www16.itrack.com.br/cmatrix/controlemonitoramento")
                    connecta.locator("input[name='usuario']").fill("GEAD")
                    connecta.locator("input[name='senha']").fill("33312976")
+                   time.sleep(1)
                    connecta.locator("button[name='Submit']").click()
                    connecta.locator("//*[@id='tabelaMenu']/tbody/tr[1]/td/ul/li[3]/a").hover()
                    connecta.locator("//*[@id='tabelaMenu']/tbody/tr[1]/td/ul/li[3]/ul/li[1]/a").hover()
@@ -198,23 +228,27 @@ for index,row in planilha_formatada.iterrows():
                    pyautogui.moveTo(x= filtro.left+50, y= filtro.top+45)
                    time.sleep(1)
                    pyautogui.click()
+                   time.sleep(1)
                    dataIniti = connecta.locator("//*[@id='dtI']").click()
                    pyautogui.hotkey('ctrl','a')
                    pyautogui.press('del')
                    pyautogui.write(data_hour_for_connecta)
                    time.sleep(1)
                    pyautogui.press('Tab')
+                   time.sleep(1)
                    dataFinal = connecta.locator("//*[@id='dtF']").click()
                    pyautogui.hotkey('ctrl','a')
                    pyautogui.press('del')
                    pyautogui.write(data_hour_adicionada)
                    time.sleep(1)
                    pyautogui.press('Tab')
+                   time.sleep(1)
                    connecta.locator("//*[@id='formfiltro']/fieldset/div/button[2]").click()
                    try:
                      time.sleep(1)
                      identificado = pyautogui.locateOnScreen('sem_dados.png', confidence=0.9)
                      if(identificado == None):
+                       time.sleep(1)
                        newUrl = connecta.inner_html("//body/table/tbody/tr[5]/td/table/tbody/tr/td/table/tbody/tr[@class='even']")
                        newSoup = BeautifulSoup(newUrl, 'html.parser')
                        nome =  newSoup.find_all('td', attrs={'style': 'text-align: center'}, string=re.compile("[^a-z]"))
@@ -224,16 +258,19 @@ for index,row in planilha_formatada.iterrows():
                         if re.search("[a-zA-Z]", infrator):
                            nomeInfrator = infrator
                         contador+=1
+                       time.sleep(1)
                        page_multas.append([placaReplaced, renavan, results, nomeInfrator])
-                       book.save(filename="C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx")  
+                       book.save(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")  
                      else:
                        print('Condutor não identificado\n')
                        condutor = 'Condutor não identificado'
                        page_multas.append([placaReplaced, renavan, results, condutor])
-                       book.save(filename="C:/Users/wilk.silva/Downloads/Consulta dia "+formatData+".xlsx")
+                       book.save(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")
                        print('Dados salvos sem o condutor')
                    except:
                      continue
+                   connecta.locator("//*[@id='li-sair']/a").click()
+                   connecta.close()
                 iContent+=1
           except: 
            print("Não existem dados") 
