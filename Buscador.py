@@ -58,8 +58,11 @@ for index,row in planilha_formatada.iterrows():
             time.sleep(1)
             book = openpyxl.load_workbook(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")
             time.sleep(1)
-            book.create_sheet("Multas")
-            page_multas = book['Multas']
+            try:
+              page_multas = book['Multas']
+            except:
+              book.create_sheet("Multas")
+              page_multas = book['Multas']
             while iContent < len(debitos):
               results = debitos[iContent].text
               if re.search("às", results):
@@ -180,8 +183,11 @@ for index,row in planilha_formatada.iterrows():
               placaReplaced = placaParte1+"-"+placaParte2
               time.sleep(1)
               book = openpyxl.load_workbook(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")
-              book.create_sheet("Multas")
-              page_multas = book['Multas']
+              try:
+               page_multas = book['Multas']
+              except:
+               book.create_sheet("Multas")
+               page_multas = book['Multas']
               while iContent < len(debitos):
                 results = debitos[iContent].text
                 if re.search("às", results):
