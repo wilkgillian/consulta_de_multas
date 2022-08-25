@@ -8,11 +8,15 @@ import re
 import openpyxl
 
 t1 = time.time()
+dnit = "DNIT"
 dataAtual = datetime.today()
 formatData = dataAtual.strftime("%d/%m/%Y").replace("/", "-")
 planilha = pd.read_excel("base_de_dados/Controle - Frota.xlsx", "Vencimento Documentação", skiprows=1, usecols=['PLACA', 'RENAVAN'])
-planilha.to_excel("consultas/Dnit/Consulta dia "+formatData+".xlsx")
-planilha_formatada = pd.read_excel("consultas/Dnit/Consulta dia "+formatData+".xlsx")
+try:
+  planilha_formatada = pd.read_excel("consultas/Consulta dia "+formatData+".xlsx")
+except: 
+  planilha.to_excel("consultas/Consulta dia "+formatData+".xlsx")
+  planilha_formatada = pd.read_excel("consultas/Consulta dia "+formatData+".xlsx")
 for index,row in planilha_formatada.iterrows():
     with sync_playwright() as p:
       browser = p.chromium.launch(headless=False, timeout=5000)
@@ -40,22 +44,22 @@ for index,row in planilha_formatada.iterrows():
              print(placa)
              controller = 0
              while controller <= len(multas):
-               print("\nEstá pago? ======>>> ",pago[controller].text)
+               print("\nEstá pago? ----->>> ",pago[controller].text)
+               payed = pago[controller].text
                results = multas[controller].text
                situacao = multas[1].text
                data = multas[2].text
                local = multas[4].text
                municipio = multas[6].text
-               if re.search("ATIVO", results) and pago[1].text != "(PAGO)":
-                 print("Situação ativa ------->>>>>")
+               print("Situacao ----->> ",situacao)
+               if re.search("ATIVO", situacao) and payed != "(PAGO)":
+                 print("Situação ativa e necessária de pagamento ------->>>>>")
                  print("\nRecebida no dia: "+data+" em "+municipio+" "+local+"") 
                  localizacao = "Recebida no dia: "+data+" em "+municipio+" "+local+""
                  data_as = str(data).replace("às ", "")
                  data_h = data_as.replace("h", ":")
                  data_replace = data_h.replace("min", "")
-                 print(data_replace)
                  data = re.search("[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]", data_replace).group(0)
-                 print("Só a data ----->>  ",data)
                  hour = re.search("[0-9][0-9]:[0-9][0-9]",data_replace).group(0)
                  hour_first_part = hour[0:2]
                  hour_second_part = hour[2:]
@@ -70,7 +74,6 @@ for index,row in planilha_formatada.iterrows():
                        sumHour = hora_acres
                  hora_adicionada = str(sumHour)+str(hour_second_part)
                  data_hora_acres = data+ " " +hora_adicionada
-                 print(hora_adicionada)
                  placaArray = [placa]
                  placaParte1 = placa[0:3]
                  placaParte2 =  placa[3:]
@@ -116,7 +119,7 @@ for index,row in planilha_formatada.iterrows():
                  time.sleep(1)
                  connecta.locator("//*[@id='formfiltro']/fieldset/div/button[2]").click()
                  time.sleep(1)
-                 book = openpyxl.load_workbook(filename="consultas/Dnit/Consulta dia "+formatData+".xlsx")
+                 book = openpyxl.load_workbook(filename="consultas/Consulta dia "+formatData+".xlsx")
                  time.sleep(1)
                  try:
                   page_multas = book['Multas']
@@ -137,14 +140,14 @@ for index,row in planilha_formatada.iterrows():
                           nomeInfrator = infrator
                         contador+=1
                        time.sleep(1)
-                       page_multas.append([placaReplaced, renavan, localizacao, nomeInfrator])
+                       page_multas.append([placaReplaced, renavan, localizacao, nomeInfrator, dnit])
                        book.save(filename="consultas/Dnit/Consulta dia "+formatData+".xlsx")   
                      else:
                        print('Condutor não identificado\n')
                        condutor = 'Condutor não identificado'
                        time.sleep(1)
-                       page_multas.append([placaReplaced, renavan, localizacao, condutor])
-                       book.save(filename="consultas/Dnit/Consulta dia "+formatData+".xlsx")
+                       page_multas.append([placaReplaced, renavan, localizacao, condutor, dnit])
+                       book.save(filename="consultas/Consulta dia "+formatData+".xlsx")
                        print('Dados salvos sem o condutor')
                  except:
                      continue

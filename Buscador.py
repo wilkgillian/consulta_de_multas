@@ -8,11 +8,15 @@ import re
 import openpyxl
 
 t1 = time.time()
+detran = "DETRAN"
 dataAtual = datetime.today()
 formatData = dataAtual.strftime("%d/%m/%Y").replace("/", "-")
 planilha = pd.read_excel("base_de_dados/Controle - Frota.xlsx", "Vencimento Documentação", skiprows=1, usecols=['PLACA', 'RENAVAN'])
-planilha.to_excel("consultas/Detran/Consulta dia "+formatData+".xlsx")
-planilha_formatada = pd.read_excel("consultas/Detran/Consulta dia "+formatData+".xlsx")
+try:
+  planilha_formatada = pd.read_excel("consultas/Consulta dia "+formatData+".xlsx")
+except: 
+  planilha.to_excel("consultas/Consulta dia "+formatData+".xlsx")
+  planilha_formatada = pd.read_excel("consultas/Consulta dia "+formatData+".xlsx")
 for index,row in planilha_formatada.iterrows():
     with sync_playwright() as p:
       browser = p.chromium.launch(headless=False, timeout=5000)
@@ -56,7 +60,7 @@ for index,row in planilha_formatada.iterrows():
             placaParte2 =  placa[3:]
             placaReplaced = placaParte1+"-"+placaParte2
             time.sleep(1)
-            book = openpyxl.load_workbook(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")
+            book = openpyxl.load_workbook(filename="consultas/Consulta dia "+formatData+".xlsx")
             time.sleep(1)
             try:
               page_multas = book['Multas']
@@ -142,14 +146,15 @@ for index,row in planilha_formatada.iterrows():
                          nomeInfrator = infrator
                        contador+=1
                       time.sleep(1)
-                      page_multas.append([placaReplaced, renavan, results, nomeInfrator])
-                      book.save(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")   
+                      
+                      page_multas.append([placaReplaced, renavan, results, nomeInfrator, detran])
+                      book.save(filename="consultas/Consulta dia "+formatData+".xlsx")   
                     else:
                       print('Condutor não identificado\n')
                       condutor = 'Condutor não identificado'
                       time.sleep(1)
-                      page_multas.append([placaReplaced, renavan, results, condutor])
-                      book.save(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")
+                      page_multas.append([placaReplaced, renavan, results, condutor, detran])
+                      book.save(filename="consultas/Consulta dia "+formatData+".xlsx")
                       print('Dados salvos sem o condutor')
                   except:
                     continue
@@ -182,7 +187,7 @@ for index,row in planilha_formatada.iterrows():
               placaParte2 =  placa[3:]
               placaReplaced = placaParte1+"-"+placaParte2
               time.sleep(1)
-              book = openpyxl.load_workbook(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")
+              book = openpyxl.load_workbook(filename="consultas/Consulta dia "+formatData+".xlsx")
               try:
                page_multas = book['Multas']
               except:
@@ -265,13 +270,13 @@ for index,row in planilha_formatada.iterrows():
                            nomeInfrator = infrator
                         contador+=1
                        time.sleep(1)
-                       page_multas.append([placaReplaced, renavan, results, nomeInfrator])
-                       book.save(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")  
+                       page_multas.append([placaReplaced, renavan, results, nomeInfrator, detran])
+                       book.save(filename="consultas/Consulta dia "+formatData+".xlsx")  
                      else:
                        print('Condutor não identificado\n')
                        condutor = 'Condutor não identificado'
-                       page_multas.append([placaReplaced, renavan, results, condutor])
-                       book.save(filename="consultas/Detran/Consulta dia "+formatData+".xlsx")
+                       page_multas.append([placaReplaced, renavan, results, condutor, detran])
+                       book.save(filename="consultas/Consulta dia "+formatData+".xlsx")
                        print('Dados salvos sem o condutor')
                    except:
                      continue
