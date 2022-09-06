@@ -51,31 +51,24 @@ with sync_playwright() as p:
         while contador < len(names):
             motorista = names[contador].text
             date = names[contador].text
-            sec = 'SENAC'
-            if re.search('[a-zA-Z]', motorista):
-                if motorista != sec:
-                    if re.search('Editar', motorista) == None:
-                        motorista_x = str(motorista.upper())
-                        page_base_condutores.append(
-                            [motorista_x, None, None])
-                        book.save(filename="consultas/Consulta dia " +
-                                  formatData+".xlsx")
-            if re.search("[0-9]", date):
+            if re.search('[a-zA-Z]', motorista) and re.search('SENAC', motorista) == None and re.search('Editar', motorista) == None:
+                motorista_x = str(motorista.upper())
+                print(motorista_x)
+            if re.search("[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]", date):
                 date_veciment = date
-                if date_veciment.count('') == 11:
-                    date_venc = date_veciment
-                    print("Data de vencimento ---->> ", date_venc)
-                    data_atual = dataAtual.strftime("%d/%m/%Y")
+                data = datetime.strptime(str(date_veciment), '%d/%m/%Y')
+                if data < datetime.now():
+                    situacao = 'CNH VENCIDA'
+                    print("Situação da CNH ---->>  VENCIDA EM ", date_veciment)
                     page_base_condutores.append(
-                        [None, date_venc, None])
+                        [motorista_x, date_veciment, situacao])
                     book.save(filename="consultas/Consulta dia " +
                               formatData+".xlsx")
-                    if str(date_venc) < data_atual:
-                        situacao_cnh = "CNH VENCIDA"
-                    else:
-                        situacao_cnh = "CNH REGULAR"
+                else:
+                    situacao = 'CNH REGULAR'
+                    print("Situação da CNH ---->>  REGULAR ATÉ ", date_veciment)
                     page_base_condutores.append(
-                        [None, None, situacao_cnh])
+                        [motorista_x, date_veciment, situacao])
                     book.save(filename="consultas/Consulta dia " +
                               formatData+".xlsx")
             contador += 1
