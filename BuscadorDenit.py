@@ -38,7 +38,7 @@ for index, row in planilha_formatada.iterrows():
                 '//*[@id="app"]/div[3]/div[1]/div/div/div/div/div/form/div[4]/button').click()
             time.sleep(0.5)
             filtro_dnit = pyautogui.locateOnScreen(
-                'sem_infos_dnit.png', confidence=0.6)
+                'images/sem_infos_dnit.png', confidence=0.6)
             if(filtro_dnit == None):
                 try:
                     time.sleep(1)
@@ -115,7 +115,7 @@ for index, row in planilha_formatada.iterrows():
                                 "//*[@id='formfiltro']/fieldset/span[1]/button").click()
                             time.sleep(1)
                             filtro = pyautogui.locateOnScreen(
-                                'filtro.png', confidence=0.7)
+                                'images/filtro.png', confidence=0.7)
                             time.sleep(1)
                             pyautogui.moveTo(filtro)
                             time.sleep(1)
@@ -156,7 +156,7 @@ for index, row in planilha_formatada.iterrows():
                                 page_multas = book['Multas']
                             try:
                                 identificado = pyautogui.locateOnScreen(
-                                    'sem_dados.png', confidence=0.9)
+                                    'images/sem_dados.png', confidence=0.9)
                                 if(identificado == None):
                                     time.sleep(1)
                                     newUrl = connecta.inner_html(

@@ -46,7 +46,7 @@ for index, row in planilha_formatada.iterrows():
             try:
                 time.sleep(1)
                 all_debits = pyautogui.locateOnScreen(
-                    'all_debits.png', confidence=0.9)
+                    'images/all_debits.png', confidence=0.9)
                 if (all_debits != None):
                     time.sleep(1)
                     select = newTab.locator('//*[@id="cmbTipoDebito"]').click()
@@ -83,7 +83,7 @@ for index, row in planilha_formatada.iterrows():
                 else:
                     print("Sem licenciamento")
                 localizador = pyautogui.locateOnScreen(
-                    'debitos.png', confidence=0.9)
+                    'images/debitos.png', confidence=0.9)
                 if (localizador == None):
                     time.sleep(1)
                     select = newTab.locator('//*[@id="cmbTipoDebito"]').click()
@@ -92,7 +92,7 @@ for index, row in planilha_formatada.iterrows():
                     pyautogui.press('enter')
                     time.sleep(1)
                     infracoes = pyautogui.locateOnScreen(
-                        'infracoes.png', confidence=0.9)
+                        'images/infracoes.png', confidence=0.9)
                     if (infracoes == None):
                         time.sleep(1)
                         url = newTab.inner_html(
@@ -161,7 +161,7 @@ for index, row in planilha_formatada.iterrows():
                                     "//*[@id='formfiltro']/fieldset/span[1]/button").click()
                                 time.sleep(1)
                                 filtro = pyautogui.locateOnScreen(
-                                    'filtro.png', confidence=0.7)
+                                    'images/filtro.png', confidence=0.7)
                                 time.sleep(1)
                                 pyautogui.moveTo(filtro)
                                 time.sleep(1)
@@ -195,7 +195,7 @@ for index, row in planilha_formatada.iterrows():
                                 try:
                                     time.sleep(1)
                                     identificado = pyautogui.locateOnScreen(
-                                        'sem_dados.png', confidence=0.9)
+                                        'images/sem_dados.png', confidence=0.9)
                                     if(identificado == None):
                                         time.sleep(1)
                                         newUrl = connecta.inner_html(
@@ -235,7 +235,7 @@ for index, row in planilha_formatada.iterrows():
                 try:
                     time.sleep(1)
                     localizador = pyautogui.locateOnScreen(
-                        'debitos.png', confidence=0.9)
+                        'images/debitos.png', confidence=0.9)
                     if (localizador == None):
                         time.sleep(1)
                         select = newTab.locator(
@@ -245,7 +245,7 @@ for index, row in planilha_formatada.iterrows():
                         pyautogui.press('enter')
                         time.sleep(1)
                         infracoes = pyautogui.locateOnScreen(
-                            'infracoes.png', confidence=0.9)
+                            'images/infracoes.png', confidence=0.9)
                         if (infracoes == None):
                             time.sleep(1)
                             url = newTab.inner_html(
@@ -317,7 +317,7 @@ for index, row in planilha_formatada.iterrows():
                                         "//*[@id='formfiltro']/fieldset/span[1]/button").click()
                                     time.sleep(1)
                                     filtro = pyautogui.locateOnScreen(
-                                        'filtro.png', confidence=0.7)
+                                        'images/filtro.png', confidence=0.7)
                                     time.sleep(1)
                                     pyautogui.moveTo(filtro)
                                     time.sleep(1)
@@ -350,7 +350,7 @@ for index, row in planilha_formatada.iterrows():
                                     try:
                                         time.sleep(1)
                                         identificado = pyautogui.locateOnScreen(
-                                            'sem_dados.png', confidence=0.9)
+                                            'images/sem_dados.png', confidence=0.9)
                                         if(identificado == None):
                                             time.sleep(1)
                                             newUrl = connecta.inner_html(
