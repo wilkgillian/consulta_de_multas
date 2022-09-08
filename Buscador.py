@@ -6,6 +6,9 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import re
 import openpyxl
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 t1 = time.time()
 detran = "DETRAN"
@@ -25,7 +28,7 @@ for index, row in planilha_formatada.iterrows():
         browser = p.chromium.launch(headless=False, timeout=5000)
         context = browser.new_context()
         page = context.new_page()
-        page.goto("https://www.detran.mt.gov.br/")
+        page.goto(os.environ['DET'])
         try:
             placa = row["PLACA"]
             renavan = row["RENAVAN"]
@@ -139,12 +142,12 @@ for index, row in planilha_formatada.iterrows():
                                 time.sleep(1)
                                 connecta = context.new_page()
                                 connecta.goto(
-                                    "http://www16.itrack.com.br/cmatrix/controlemonitoramento")
+                                    os.environ['CONNECTA'])
                                 time.sleep(1)
                                 connecta.locator(
-                                    "input[name='usuario']").fill("GEAD")
+                                    "input[name='usuario']").fill(os.environ['USER_NAME'])
                                 connecta.locator(
-                                    "input[name='senha']").fill("33312976")
+                                    "input[name='senha']").fill(os.environ['PASSWORD'])
                                 time.sleep(1)
                                 connecta.locator(
                                     "button[name='Submit']").click()
@@ -296,11 +299,11 @@ for index, row in planilha_formatada.iterrows():
                                     connecta = context.new_page()
                                     time.sleep(1)
                                     connecta.goto(
-                                        "http://www16.itrack.com.br/cmatrix/controlemonitoramento")
+                                        os.environ['CONNECTA'])
                                     connecta.locator(
-                                        "input[name='usuario']").fill("GEAD")
+                                        "input[name='usuario']").fill(os.environ['USER_NAME'])
                                     connecta.locator(
-                                        "input[name='senha']").fill("33312976")
+                                        "input[name='senha']").fill(os.environ['PASSWORD'])
                                     time.sleep(1)
                                     connecta.locator(
                                         "button[name='Submit']").click()

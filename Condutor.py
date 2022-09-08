@@ -1,11 +1,12 @@
-import pyautogui
 import time
 from datetime import datetime
 from playwright.sync_api import sync_playwright
-import pandas as pd
 from bs4 import BeautifulSoup
 import re
 import openpyxl
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 t1 = time.time()
 detran = "DETRAN"
@@ -15,11 +16,11 @@ with sync_playwright() as p:
     browser = p.chromium.launch(headless=False, timeout=5000)
     context = browser.new_context()
     page = context.new_page()
-    page.goto("http://www16.itrack.com.br/cmatrix/controlemonitoramento")
+    page.goto(os.environ['CONNECTA'])
     page.locator(
-        "input[name='usuario']").fill("GEAD")
+        "input[name='usuario']").fill(os.environ['USER_NAME'])
     page.locator(
-        "input[name='senha']").fill("33312976")
+        "input[name='senha']").fill(os.environ['PASSWORD'])
     time.sleep(1)
     page.locator(
         "button[name='Submit']").click()

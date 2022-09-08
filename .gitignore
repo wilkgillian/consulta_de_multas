@@ -3,6 +3,7 @@
 /consultas
 
 #files
+/.env
 /.env.local
 /.exe
 
