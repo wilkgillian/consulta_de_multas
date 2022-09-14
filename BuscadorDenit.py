@@ -48,148 +48,159 @@ for index, row in planilha_formatada.iterrows():
                     multas = soup.find_all(
                         'span', attrs={'style': 'font-weight: bold;'})
                     url2 = page.inner_html(
-                        "//*[@id='app']/div[3]/div[3]/div[1]/div")
+                        "//*[@id='app']/div[3]/div[3]/div[1]/div/div/div[2]/div/div[4]/div[2]/div/div[2]")
                     soup2 = BeautifulSoup(url2, 'html.parser')
-                    pago = soup2.find_all(
-                        'span', attrs={'style': False}, string=re.compile("(PAGO)"))
+                    pago = soup.find_all(
+                        'span', attrs={'style': False}, string=re.compile("Pagar"))
                     print("___________________")
                     print(placa)
-                    controller = 0
-                    while controller <= len(multas):
-                        print("\nEstá pago? ----->>> ", pago[controller].text)
-                        payed = pago[controller].text
-                        results = multas[controller].text
-                        situacao = multas[1].text
-                        data = multas[2].text
-                        local = multas[4].text
-                        municipio = multas[6].text
-                        print("Situacao ----->> ", situacao)
-                        if re.search("ATIVO", situacao) and payed != "(PAGO)":
-                            print(
-                                "Situação ativa e necessária de pagamento ------->>>>>")
-                            print("\nRecebida no dia: "+data +
-                                  " em "+municipio+" "+local+"")
-                            localizacao = "Recebida no dia: "+data+" em "+municipio+" "+local+""
-                            data_as = str(data).replace("às ", "")
-                            data_h = data_as.replace("h", ":")
-                            data_replace = data_h.replace("min", "")
-                            data = re.search(
-                                "[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]", data_replace).group(0)
-                            hour = re.search(
-                                "[0-9][0-9]:[0-9][0-9]", data_replace).group(0)
-                            hour_first_part = hour[0:2]
-                            hour_second_part = hour[2:]
-                            if (int(hour_first_part) == 0):
-                                acres = '0.1'
-                                sumHour = int(hour_first_part)+float(acres)
-                            else:
-                                hora_acres = int(hour_first_part)+1
-                                if hora_acres < 10:
-                                    sumHour = '0'+str(hora_acres)
+                    # print(pago)
+                    cont = 0
+                    while cont <= len(pago):
+                        payed = pago[cont].text
+                        controller = 0
+                        while controller <= len(multas):
+                            print("\nEstá pago? ----->>> ",
+                                  payed)
+                            results = multas[controller].text
+                            print(results)
+                            situacao = multas[1].text
+                            data = multas[2].text
+                            local = multas[4].text
+                            municipio = multas[6].text
+                            print("Situacao ----->> ", situacao)
+                            if re.search("ATIVO", situacao) and payed == "Pagar":
+                                print(
+                                    "Situação ativa e necessária de pagamento ------->>>>>")
+                                print("\nRecebida no dia: "+data +
+                                      " em "+municipio+" "+local+"")
+                                localizacao = "Recebida no dia: "+data+" em "+municipio+" "+local+""
+                                data_as = str(data).replace("às ", "")
+                                data_h = data_as.replace("h", ":")
+                                data_replace = data_h.replace("min", "")
+                                data = re.search(
+                                    "[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]", data_replace).group(0)
+                                hour = re.search(
+                                    "[0-9][0-9]:[0-9][0-9]", data_replace).group(0)
+                                hour_first_part = hour[0:2]
+                                hour_second_part = hour[2:]
+                                if (int(hour_first_part) == 0):
+                                    acres = '0.1'
+                                    sumHour = int(hour_first_part)+float(acres)
                                 else:
-                                    sumHour = hora_acres
-                            hora_adicionada = str(
-                                sumHour)+str(hour_second_part)
-                            data_hora_acres = data + " " + hora_adicionada
-                            placaArray = [placa]
-                            placaParte1 = placa[0:3]
-                            placaParte2 = placa[3:]
-                            placaReplaced = placaParte1+"-"+placaParte2
-                            time.sleep(1)
-                            connecta = context.new_page()
-                            connecta.goto(os.environ['CONNECTA'])
-                            time.sleep(1)
-                            connecta.locator("input[name='usuario']").fill(
-                                os.environ['USER_NAME'])
-                            connecta.locator("input[name='senha']").fill(
-                                os.environ['PASSWORD'])
-                            time.sleep(1)
-                            connecta.locator("button[name='Submit']").click()
-                            connecta.locator(
-                                "//*[@id='tabelaMenu']/tbody/tr[1]/td/ul/li[3]/a").hover()
-                            connecta.locator(
-                                "//*[@id='tabelaMenu']/tbody/tr[1]/td/ul/li[3]/ul/li[1]/a").hover()
-                            connecta.locator(
-                                "a[href='controlerelatoriodeslocamento']").click()
-                            connecta.locator(
-                                "//*[@id='formfiltro']/fieldset/span[1]/button").click()
-                            time.sleep(1)
-                            filtro = pyautogui.locateOnScreen(
-                                'images/filtro.png', confidence=0.7)
-                            time.sleep(1)
-                            pyautogui.moveTo(filtro)
-                            time.sleep(1)
-                            pyautogui.click()
-                            pyautogui.write(placaReplaced)
-                            time.sleep(1)
-                            pyautogui.moveTo(x=filtro.left+50, y=filtro.top+45)
-                            time.sleep(1)
-                            pyautogui.click()
-                            time.sleep(1)
-                            dataIniti = connecta.locator(
-                                "//*[@id='dtI']").click()
-                            time.sleep(1)
-                            pyautogui.hotkey('ctrl', 'a')
-                            pyautogui.press('del')
-                            pyautogui.write(data_replace)
-                            time.sleep(1)
-                            pyautogui.press('Tab')
-                            time.sleep(1)
-                            dataFinal = connecta.locator(
-                                "//*[@id='dtF']").click()
-                            pyautogui.hotkey('ctrl', 'a')
-                            pyautogui.press('del')
-                            pyautogui.write(data_hora_acres)
-                            time.sleep(1)
-                            pyautogui.press('Tab')
-                            time.sleep(1)
-                            connecta.locator(
-                                "//*[@id='formfiltro']/fieldset/div/button[2]").click()
-                            time.sleep(1)
-                            book = openpyxl.load_workbook(
-                                filename="consultas/Consulta dia "+formatData+".xlsx")
-                            time.sleep(1)
-                            try:
-                                page_multas = book['Multas']
-                            except:
-                                book.create_sheet("Multas")
-                                page_multas = book['Multas']
-                            try:
-                                identificado = pyautogui.locateOnScreen(
-                                    'images/sem_dados.png', confidence=0.9)
-                                if(identificado == None):
-                                    time.sleep(1)
-                                    newUrl = connecta.inner_html(
-                                        "//body/table/tbody/tr[5]/td/table/tbody/tr/td/table/tbody/tr[@class='even']")
-                                    newSoup = BeautifulSoup(
-                                        newUrl, 'html.parser')
-                                    nome = newSoup.find_all(
-                                        'td', attrs={'style': 'text-align: center'}, string=re.compile("[^a-z]"))
-                                    contador = 0
-                                    while contador < len(nome):
-                                        infrator = nome[0].text
-                                        if re.search("[a-zA-Z]", infrator):
-                                            nomeInfrator = infrator
-                                        contador += 1
-                                    time.sleep(1)
-                                    page_multas.append(
-                                        [placaReplaced, renavan, localizacao, nomeInfrator, dnit])
-                                    book.save(
-                                        filename="consultas/Dnit/Consulta dia "+formatData+".xlsx")
-                                else:
-                                    print('Condutor não identificado\n')
-                                    condutor = 'Condutor não identificado'
-                                    time.sleep(1)
-                                    page_multas.append(
-                                        [placaReplaced, renavan, localizacao, condutor, dnit])
-                                    book.save(
-                                        filename="consultas/Consulta dia "+formatData+".xlsx")
-                                    print('Dados salvos sem o condutor')
-                            except:
-                                continue
-                            connecta.locator("//*[@id='li-sair']/a").click()
-                            connecta.close()
-                        controller += 1
+                                    hora_acres = int(hour_first_part)+1
+                                    if hora_acres < 10:
+                                        sumHour = '0'+str(hora_acres)
+                                    else:
+                                        sumHour = hora_acres
+                                hora_adicionada = str(
+                                    sumHour)+str(hour_second_part)
+                                data_hora_acres = data + " " + hora_adicionada
+                                placaArray = [placa]
+                                placaParte1 = placa[0:3]
+                                placaParte2 = placa[3:]
+                                placaReplaced = placaParte1+"-"+placaParte2
+                                time.sleep(1)
+                                connecta = context.new_page()
+                                connecta.goto(os.environ['CONNECTA'])
+                                time.sleep(1)
+                                connecta.locator("input[name='usuario']").fill(
+                                    os.environ['USER_NAME'])
+                                connecta.locator("input[name='senha']").fill(
+                                    os.environ['PASSWORD'])
+                                time.sleep(1)
+                                connecta.locator(
+                                    "button[name='Submit']").click()
+                                connecta.locator(
+                                    "//*[@id='tabelaMenu']/tbody/tr[1]/td/ul/li[3]/a").hover()
+                                connecta.locator(
+                                    "//*[@id='tabelaMenu']/tbody/tr[1]/td/ul/li[3]/ul/li[1]/a").hover()
+                                connecta.locator(
+                                    "a[href='controlerelatoriodeslocamento']").click()
+                                connecta.locator(
+                                    "//*[@id='formfiltro']/fieldset/span[1]/button").click()
+                                time.sleep(1)
+                                filtro = pyautogui.locateOnScreen(
+                                    'images/filtro.png', confidence=0.7)
+                                time.sleep(1)
+                                pyautogui.moveTo(filtro)
+                                time.sleep(1)
+                                pyautogui.click()
+                                pyautogui.write(placaReplaced)
+                                time.sleep(1)
+                                pyautogui.moveTo(
+                                    x=filtro.left+50, y=filtro.top+45)
+                                time.sleep(1)
+                                pyautogui.click()
+                                time.sleep(1)
+                                dataIniti = connecta.locator(
+                                    "//*[@id='dtI']").click()
+                                time.sleep(1)
+                                pyautogui.hotkey('ctrl', 'a')
+                                pyautogui.press('del')
+                                pyautogui.write(data_replace)
+                                time.sleep(1)
+                                pyautogui.press('Tab')
+                                time.sleep(1)
+                                dataFinal = connecta.locator(
+                                    "//*[@id='dtF']").click()
+                                pyautogui.hotkey('ctrl', 'a')
+                                pyautogui.press('del')
+                                pyautogui.write(data_hora_acres)
+                                time.sleep(1)
+                                pyautogui.press('Tab')
+                                time.sleep(1)
+                                connecta.locator(
+                                    "//*[@id='formfiltro']/fieldset/div/button[2]").click()
+                                time.sleep(1)
+                                book = openpyxl.load_workbook(
+                                    filename="consultas/Consulta dia "+formatData+".xlsx")
+                                time.sleep(1)
+                                try:
+                                    page_multas = book['Multas']
+                                except:
+                                    book.create_sheet("Multas")
+                                    page_multas = book['Multas']
+                                try:
+                                    identificado = pyautogui.locateOnScreen(
+                                        'images/sem_dados.png', confidence=0.9)
+                                    if(identificado == None):
+                                        time.sleep(1)
+                                        newUrl = connecta.inner_html(
+                                            "//body/table/tbody/tr[5]/td/table/tbody/tr/td/table/tbody/tr[@class='even']")
+                                        newSoup = BeautifulSoup(
+                                            newUrl, 'html.parser')
+                                        nome = newSoup.find_all(
+                                            'td', attrs={'style': 'text-align: center'}, string=re.compile("[^a-z]"))
+                                        contador = 0
+                                        while contador < len(nome):
+                                            infrator = nome[0].text
+                                            if re.search("[a-zA-Z]", infrator):
+                                                nomeInfrator = infrator
+                                            contador += 1
+                                        time.sleep(1)
+                                        page_multas.append(
+                                            [placaReplaced, renavan, localizacao, nomeInfrator, dnit])
+                                        book.save(
+                                            filename="consultas/Dnit/Consulta dia "+formatData+".xlsx")
+                                    else:
+                                        print('Condutor não identificado\n')
+                                        condutor = 'Condutor não identificado'
+                                        time.sleep(1)
+                                        page_multas.append(
+                                            [placaReplaced, renavan, localizacao, condutor, dnit])
+                                        book.save(
+                                            filename="consultas/Consulta dia "+formatData+".xlsx")
+                                        print('Dados salvos sem o condutor')
+                                except:
+                                    print('Sem dados')
+                                connecta.locator(
+                                    "//*[@id='li-sair']/a").click()
+                                connecta.close()
+                            controller += 1
+
+                        cont += 1
+
                 except:
                     print('Não Existem dados')
             else:
