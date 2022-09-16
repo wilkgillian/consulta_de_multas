@@ -1,3 +1,5 @@
+from tkinter.font import names
+from unicodedata import name
 import pyautogui
 import time
 from datetime import datetime
@@ -189,13 +191,19 @@ for index, row in planilha_formatada.iterrows():
                                         "//body/table/tbody/tr[5]/td/table/tbody/tr/td/table/tbody")
                                     newSoup = BeautifulSoup(
                                         newUrl, 'html.parser')
-                                    nome = newSoup.find(
-                                        'td', attrs={'style': 'text-align: center'}, string=re.compile(r"[a-zA-Z]") and not re.compile("CEP") and not "-").get_text()
+                                    nome = newSoup.find_all(
+                                        'td', attrs={'style': 'text-align: center'}, string=re.compile(r"[A-Z]"))
                                     contador = 0
-                                    print(nome)
+                                    while contador < len(nome):
+                                        name = nome[contador].text
+                                        if re.search(r"[a-z]", name) == None and re.search("CEP", name) == None:
+                                            print(
+                                                "Nome do condutor --> ", name)
+                                            condutor = name
+                                        contador += 1
                                     time.sleep(1)
                                     page_multas.append(
-                                        [placaReplaced, renavan, localizacao, nome, dnit])
+                                        [placaReplaced, renavan, localizacao, condutor, dnit])
                                     book.save(
                                         filename="consultas/Consulta dia "+formatData+".xlsx")
                                     print("Dados salvos com sucesso")

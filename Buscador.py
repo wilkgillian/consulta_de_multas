@@ -203,11 +203,11 @@ for index, row in planilha_formatada.iterrows():
                                         newSoup = BeautifulSoup(
                                             newUrl, 'html.parser')
                                         nome = newSoup.find_all(
-                                            'td', attrs={'style': 'text-align: center'}, string=re.compile("[^a-z]"))
+                                            'td', attrs={'style': 'text-align: center'}, string=re.compile(r"[A-Z]"))
                                         contador = 0
                                         while contador < len(nome):
-                                            infrator = nome[0].text
-                                            if re.search("[a-zA-Z]", infrator):
+                                            infrator = nome[contador].text
+                                            if re.search(r"[a-z]", infrator) == None and re.search("CEP", infrator) == None:
                                                 nomeInfrator = infrator
                                             contador += 1
                                         time.sleep(1)
@@ -216,6 +216,7 @@ for index, row in planilha_formatada.iterrows():
                                             [placaReplaced, renavan, results, nomeInfrator, detran])
                                         book.save(
                                             filename="consultas/Consulta dia "+formatData+".xlsx")
+                                        print("Dados salvos com sucesso")
                                     else:
                                         print('Condutor não identificado\n')
                                         condutor = 'Condutor não identificado'
@@ -358,11 +359,11 @@ for index, row in planilha_formatada.iterrows():
                                             newSoup = BeautifulSoup(
                                                 newUrl, 'html.parser')
                                             nome = newSoup.find_all(
-                                                'td', attrs={'style': 'text-align: center'}, string=re.compile("[^a-z]"))
+                                                'td', attrs={'style': 'text-align: center'}, string=re.compile(r"[A-Z]"))
                                             contador = 0
                                             while contador < len(nome):
-                                                infrator = nome[0].text
-                                                if re.search("[a-zA-Z]", infrator):
+                                                infrator = nome[contador].text
+                                                if re.search(r"[a-z]", infrator) == None and re.search("CEP", infrator) == None:
                                                     nomeInfrator = infrator
                                                 contador += 1
                                             time.sleep(1)
@@ -370,6 +371,7 @@ for index, row in planilha_formatada.iterrows():
                                                 [placaReplaced, renavan, results, nomeInfrator, detran])
                                             book.save(
                                                 filename="consultas/Consulta dia "+formatData+".xlsx")
+                                            print("Dados salvos com sucesso")
                                         else:
                                             print('Condutor não identificado\n')
                                             condutor = 'Condutor não identificado'
