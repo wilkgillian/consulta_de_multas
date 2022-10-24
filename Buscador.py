@@ -20,7 +20,8 @@ try:
     planilha_formatada = pd.read_excel(
         "consultas/Consulta dia "+formatData+".xlsx")
 except:
-    planilha.to_excel("consultas/Consulta dia "+formatData+".xlsx")
+    planilha.to_excel("consultas/Consulta dia " +
+                      formatData+".xlsx", index=False)
     planilha_formatada = pd.read_excel(
         "consultas/Consulta dia "+formatData+".xlsx")
 for index, row in planilha_formatada.iterrows():
@@ -226,11 +227,14 @@ for index, row in planilha_formatada.iterrows():
                                         book.save(
                                             filename="consultas/Consulta dia "+formatData+".xlsx")
                                         print('Dados salvos sem o condutor')
+                                    connecta.locator(
+                                        "//*[@id='li-sair']/a").click()
+                                    connecta.close()
                                 except:
-                                    continue
-                                connecta.locator(
-                                    "//*[@id='li-sair']/a").click()
-                                connecta.close()
+
+                                    connecta.locator(
+                                        "//*[@id='li-sair']/a").click()
+                                    connecta.close()
                             iContent += 1
             except:
                 try:
@@ -380,6 +384,9 @@ for index, row in planilha_formatada.iterrows():
                                             book.save(
                                                 filename="consultas/Consulta dia "+formatData+".xlsx")
                                             print('Dados salvos sem o condutor')
+                                        connecta.locator(
+                                            "//*[@id='li-sair']/a").click()
+                                        connecta.close()
                                     except:
                                         continue
                                     connecta.locator(
