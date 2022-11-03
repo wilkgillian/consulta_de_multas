@@ -4,7 +4,6 @@ def extractor_licenciamento():
     licenciamento = 1
     vencimento = 2
     return licenciamento, vencimento   
-
  
 def extractor_infracoes_em_autuacao(url):
     soup = BeautifulSoup(url, 'html.parser')
@@ -16,6 +15,7 @@ def extractor_infracoes_em_autuacao(url):
         data = debitos[1].text
         i+=1
     return {"local": local, "data": data}
-# , data
+
+
 def extractor_penalidades():
     pass
