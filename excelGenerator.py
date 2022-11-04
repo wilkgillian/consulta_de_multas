@@ -1,22 +1,15 @@
-from datetime import datetime
-from openpyxl import Workbook, load_workbook
-import pandas as pd
+from openpyxl import load_workbook
 
-dataAtual = datetime.today()
-formatData = dataAtual.strftime("%d/%m/%Y").replace("/", "-")
 
-path = "consultas/Consulta dia 01-11-2022.xlsx"
-planilha = load_workbook(path)
-
-async def excel_generator(placa, multa, local_data, condutor):
-    # planilha: Workbook
+async def excel_generator(placa: str, multa: str, local_data: str, condutor: str, path: str, orgao: str):
+    planilha = load_workbook(path)
     try:
-        page_docs = planilha['Documentos']
+        page_docs = planilha['Multas']
+        page_docs.append([placa, multa, local_data, condutor, orgao])
+        planilha.save(filename=path)
     except:
-        planilha.create_sheet("Documentos")
-        page_docs = planilha['Documentos']
-        page_docs.append(
-            [placa, multa, local_data, condutor])
-        planilha.save(
-                        filename="consultas/Consulta dia "+formatData+".xlsx")
+        planilha.create_sheet("Multas")
+        page_docs = planilha['Multas']
+        page_docs.append([placa, multa, local_data, condutor, orgao])
+        planilha.save(filename=path)
     pass
