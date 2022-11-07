@@ -6,7 +6,7 @@ import pandas as pd
 from playwright.async_api import async_playwright
 from buscadorConnecta import connecta_actions
 
-from extractor_detran import extractor_infracoes_em_autuacao
+from extractor_detran import extractor_infracoes_em_autuacao, extractor_licenciamento
 from utils.acresHourConnecta import hour_for_connecta
 from excelGenerator import excel_generator
 from utils.formatPlacaForConnecta import formatPlacaForConnecta
@@ -49,6 +49,12 @@ async def main():
                 await page.locator("//*[@id='formVeiculo']/div[4]/input[2]").click()
             page2 = await event_info.value
             print(placa, renavan)
+            try:
+                page2.set_default_timeout(1000)
+                urlLicenciamento = await page2.inner_html('//*[@id="Integral"]/table/tbody')
+                extractor_licenciamento(urlLicenciamento, placa)
+            except:
+                print("Sem licenciamento")
             try:
                 await page2.locator("#cmbTipoDebito").select_option("Integral")
                 url = await page2.inner_html('//*[@id="div_servicos_Autuacoes"]/table/tbody/tr[2]/td[2]')

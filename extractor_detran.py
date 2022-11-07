@@ -1,16 +1,27 @@
+import re
 from bs4 import BeautifulSoup
 
 
-def extractor_licenciamento(url):
-    urlLicenciamento = url.inner_html(
-        '//*[@id="Integral"]/table/tbody')
+def extractor_licenciamento(url, placa):
     soupLicenciamento = BeautifulSoup(
-        urlLicenciamento, 'html.parser')
+        url, 'html.parser')
     licenciamentoArray = soupLicenciamento.find_all(
         'td', attrs={'width': False, 'colspan': False})
-    licenciamento = 1
-    vencimento = 2
-    return licenciamento, vencimento
+    liceContador = 0
+    arr = []
+    while liceContador < len(licenciamentoArray):
+        res = licenciamentoArray[liceContador].text
+        if re.search("Licenciamento", res):
+            licenciamentoRes = res
+            vencimentoLicenciamento = licenciamentoArray[liceContador+1].text
+            arr.append(placa, licenciamentoRes, vencimentoLicenciamento)
+            print("--->> "+placa+" "+licenciamentoRes +
+                  " vencimento: "+vencimentoLicenciamento+"")
+        liceContador += 1
+    licenciamento = arr
+    # vencimento = 2
+    return licenciamento
+# , vencimento
 
 
 def extractor_infracoes_em_autuacao(url):
