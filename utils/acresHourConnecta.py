@@ -14,7 +14,10 @@ def hour_for_connecta(dados):
 
     elif int(hora[0]) == 0 and int(hora[1]) != 0:
         adding = int(hora[1])+1
-        sum_hour = "0"+str(adding)
+        if adding <= 9:
+            sum_hour = "0"+str(adding)
+        else:
+            sum_hour = str(adding)
 
     elif int(hour_first_part) >= 23 and int(data[0:2]) < 31:
         sum_hour = "00"

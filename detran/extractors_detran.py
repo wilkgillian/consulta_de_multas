@@ -2,26 +2,21 @@ import re
 from bs4 import BeautifulSoup
 
 
-def extractor_licenciamento(url, placa):
+def extractor_licenciamento(url):
     soupLicenciamento = BeautifulSoup(
         url, 'html.parser')
     licenciamentoArray = soupLicenciamento.find_all(
         'td', attrs={'width': False, 'colspan': False})
     liceContador = 0
-    arr = []
     while liceContador < len(licenciamentoArray):
         res = licenciamentoArray[liceContador].text
         if re.search("Licenciamento", res):
             licenciamentoRes = res
             vencimentoLicenciamento = licenciamentoArray[liceContador+1].text
-            arr.append(placa, licenciamentoRes, vencimentoLicenciamento)
-            print("--->> "+placa+" "+licenciamentoRes +
-                  " vencimento: "+vencimentoLicenciamento+"")
+
         liceContador += 1
-    licenciamento = arr
-    # vencimento = 2
-    return licenciamento
-# , vencimento
+    # não finalizado necessita de um débito para teste
+    return {"licenciamento": licenciamentoRes, "vencimento_licenciamento": vencimentoLicenciamento}
 
 
 def extractor_infracoes_em_autuacao(url):
@@ -36,5 +31,13 @@ def extractor_infracoes_em_autuacao(url):
     return {"local": local, "data": data}
 
 
-def extractor_penalidades():
-    pass
+def extractor_penalidades(url):
+    soup = BeautifulSoup(url, 'html.parser')
+    debitos = soup.find_all(
+        'td', attrs={'class': False, 'width': False, 'colspan': False})
+    i = 0
+    while i < len(debitos):
+        local = debitos[0].text
+        data = debitos[1].text
+        i += 1
+    return {"local": local, "data": data}
