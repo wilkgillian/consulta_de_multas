@@ -3,11 +3,9 @@ import re
 import time
 from playwright.async_api import Page
 from dotenv import load_dotenv
-
 from connecta.extractors_connecta import extractor_connecta
 
 load_dotenv()
-
 
 async def connecta_actions(page: Page, hours: str, placa: str) -> None:
     await page.goto(
@@ -38,11 +36,12 @@ async def connecta_actions(page: Page, hours: str, placa: str) -> None:
     await page.locator("#dtF").press("Control+KeyA")
     await page.locator("#dtF").press("Delete")
     await page.locator("#dtF").type(hours["date_hour_acres"], delay=10)
+    await page.keyboard.press("Tab")
     await page.locator("//*[@id='formfiltro']/fieldset/div/button[2]").click()
 
     try:
+        page.set_default_timeout(2000)
         url = await page.inner_html("//body/table/tbody/tr[5]/td/table/tbody/tr/td/table/tbody/tr")
-        page.set_default_timeout(1000)
         infrator = await extractor_connecta(url)
     except:
         infrator = "Não identificado"

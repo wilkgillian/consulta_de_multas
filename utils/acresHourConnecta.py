@@ -4,9 +4,7 @@ import re
 def hour_for_connecta(dados):
     data = re.search('(\\d{2}\\/\\d{2}\\/\\d{4})', dados['data']).group(0)
     hora = re.search('(\\d{2}\\:\\d{2})', dados['data']).group(0)
-
     date_hour = data + " " + hora
-
     hour_first_part = hora[0:2]
     hour_last_part = hora[3:]
     if int(hour_first_part) == 0:

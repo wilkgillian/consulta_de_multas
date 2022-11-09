@@ -4,6 +4,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from termcolor import colored
 from playwright.async_api import async_playwright
+from denit.newBuscadorDenit import buscador_denit
 from detran.buscadorDetran import buscador_detran
 
 
@@ -15,7 +16,6 @@ formatData = dataAtual.strftime("%d/%m/%Y").replace("/", "-")
 path = "consultas/Consulta dia "+formatData+".xlsx"
 planilha = pd.read_excel("base_de_dados/Controle - Frota.xlsx",
                          "Vencimento Documentação", skiprows=1, usecols=['PLACA', 'RENAVAN'])
-orgao = "Detran"
 try:
     planilha_formatada = pd.read_excel(path)
 except:
@@ -29,11 +29,15 @@ async def main():
         browser = await chromium.launch(headless=False)
         context = await browser.new_context()
         page = await context.new_page()
-        
-        try:    
-            await buscador_detran(page=page, context=context, planilha_formatada=planilha_formatada, path=path)
+
+        # try:
+        #     await buscador_detran(page=page, context=context, planilha_formatada=planilha_formatada, path=path)
+        # except:
+        #     print(colored("Falha ao executar a busca no detran", 'red'))
+        try:
+            await buscador_denit(page=page, planilha=planilha_formatada, path=path, context=context)
         except:
-            print(colored("Falha ao executar a busca no detran", 'red'))
+            print(colored("Falha ao executar busca no denit", 'red'))
         await browser.close()
         print("Busca finalizada...")
 

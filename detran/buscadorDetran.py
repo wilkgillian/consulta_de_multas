@@ -56,7 +56,7 @@ async def buscador_detran(page: Page, context: BrowserContext, planilha_formatad
             connecta = await context.new_page()
             print(colored(debito['local']+debito['data'], 'red'))
             condutor = await connecta_actions(page=connecta, hours=hours, placa=formatPlacaForConnecta(str(placa)))
-            await excel_generator_multas(placa=str(placa), multa=debito['local'], local_data=debito['data'], condutor=condutor, path=path, orgao=orgao)
+            await excel_generator_multas(placa=str(placa).upper(), multa=str(debito['local']).upper(), local_data=str(debito['data']).upper(), condutor=str(condutor).upper(), path=path, orgao=str(orgao).upper())
         except:
             print(colored("<<== Penalidades não encontradas ==>>", 'green'))
 
