@@ -35,7 +35,7 @@ async def buscador_detran(page: Page, context: BrowserContext, planilha_formatad
             await excel_generator_licenciamento(placa=str(placa), licenciamento=licenciamento['licenciamento'], data_vencimento=licenciamento['vencimento_licenciamento'], path=path)
 
         except:
-            print(colored('<<== Sem licenciamento ==>>', 'green'))
+            print(colored('Sem licenciamento pendente', 'green'))
         try:
             page2.set_default_timeout(1000)
             url = await page2.inner_html('//*[@id="div_servicos_Autuacoes"]/table/tbody/tr[2]/td[2]')
@@ -44,10 +44,10 @@ async def buscador_detran(page: Page, context: BrowserContext, planilha_formatad
             connecta = await context.new_page()
             print(colored(debito['local']+debito['data'], 'red'))
             condutor = await connecta_actions(page=connecta, hours=hours, placa=formatPlacaForConnecta(str(placa)))
-            await excel_generator_multas(placa=str(placa), multa=debito['local'], local_data=debito['data'], condutor=condutor, path=path, orgao=orgao)
+            await excel_generator_multas(placa=str(placa), multa=str(debito['local']).upper(), local_data=str(debito['data']).upper(), condutor=str(condutor).upper(), path=path, orgao=orgao.upper())
         except:
             print(
-                colored("<<== Infrações em autuação não encontradas ==>>", 'green'))
+                colored("Infrações em autuação não encontradas", 'green'))
         try:
             page2.set_default_timeout(1000)
             url = await page2.inner_html('//*[@id="div_servicos_Multas"]/table/tbody/tr[2]/td[2]')
@@ -56,9 +56,9 @@ async def buscador_detran(page: Page, context: BrowserContext, planilha_formatad
             connecta = await context.new_page()
             print(colored(debito['local']+debito['data'], 'red'))
             condutor = await connecta_actions(page=connecta, hours=hours, placa=formatPlacaForConnecta(str(placa)))
-            await excel_generator_multas(placa=str(placa).upper(), multa=str(debito['local']).upper(), local_data=str(debito['data']).upper(), condutor=str(condutor).upper(), path=path, orgao=str(orgao).upper())
+            await excel_generator_multas(placa=str(placa).upper(), multa=str(debito['local']).upper(), local_data=str(debito['data']).upper(), condutor=str(condutor).upper(), path=path, orgao=orgao.upper())
         except:
-            print(colored("<<== Penalidades não encontradas ==>>", 'green'))
+            print(colored("Penalidades não encontradas", 'green'))
 
         await page2.close()
 pass

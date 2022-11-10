@@ -1,38 +1,36 @@
-import time
 from datetime import datetime
-from playwright.sync_api import sync_playwright
+import time
+from playwright.async_api import BrowserContext
 from bs4 import BeautifulSoup
 import re
 import openpyxl
 from dotenv import load_dotenv
 import os
+
+from utils.excelGenerator import excel_generator_condutores
 load_dotenv()
 
 t1 = time.time()
 detran = "DETRAN"
 dataAtual = datetime.today()
 formatData = dataAtual.strftime("%d/%m/%Y").replace("/", "-")
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=False, timeout=5000)
-    context = browser.new_context()
-    page = context.new_page()
-    page.goto(os.environ['CONNECTA'])
-    page.locator(
+
+
+async def condutores(path, context: BrowserContext):
+    page = await context.new_page()
+    await page.goto(os.environ['CONNECTA'])
+    await page.locator(
         "input[name='usuario']").fill(os.environ['USER_NAME'])
-    page.locator(
+    await page.locator(
         "input[name='senha']").fill(os.environ['PASSWORD'])
-    time.sleep(1)
-    page.locator(
+    await page.locator(
         "button[name='Submit']").click()
-    page.locator("//*[@id='tabelaMenu']/tbody/tr[1]/td/ul/li[2]/a").hover()
-    page.locator(
+    await page.locator("//*[@id='tabelaMenu']/tbody/tr[1]/td/ul/li[2]/a").hover()
+    await page.locator(
         "//*[@id='tabelaMenu']/tbody/tr[1]/td/ul/li[2]/ul/li[2]/a").click()
-    time.sleep(2)
-    new_url = page.inner_html('//*[@id="box-table-b"]/tbody/tr[16]/th/form')
+    new_url = await page.inner_html('//*[@id="box-table-b"]/tbody/tr[16]/th/form')
     new_soup = BeautifulSoup(new_url, 'html.parser')
     next_page = new_soup.find('a').get('href')
-    time.sleep(3)
-    parametro = 0
     book = openpyxl.load_workbook(
         filename="consultas/Consulta dia "+formatData+".xlsx")
     try:
@@ -43,10 +41,10 @@ with sync_playwright() as p:
         page_base_condutores.append(
             ['MOTORISTAS CADASTRADOS', 'VENCIMENTO DA CNH', 'SITUAÇÃO'])
 
-    def extrator():
+    async def extrator():
         contador = 0
         time.sleep(2)
-        url = page.inner_html('//*[@id="box-table-b"]/tbody')
+        url = await page.inner_html('//*[@id="box-table-b"]/tbody')
         soup = BeautifulSoup(url, 'html.parser')
         names = soup.find_all("td")
         while contador < len(names):
@@ -61,17 +59,13 @@ with sync_playwright() as p:
                 if data < datetime.now():
                     situacao = 'CNH VENCIDA'
                     print("Situação da CNH ---->>  VENCIDA EM ", date_veciment)
-                    page_base_condutores.append(
-                        [motorista_x, date_veciment, situacao])
-                    book.save(filename="consultas/Consulta dia " +
-                              formatData+".xlsx")
+                    excel_generator_condutores(
+                        motorista_x, date_veciment, situacao, path)
                 else:
                     situacao = 'CNH REGULAR'
                     print("Situação da CNH ---->>  REGULAR ATÉ ", date_veciment)
-                    page_base_condutores.append(
-                        [motorista_x, date_veciment, situacao])
-                    book.save(filename="consultas/Consulta dia " +
-                              formatData+".xlsx")
+                    excel_generator_condutores(
+                        motorista_x, date_veciment, situacao, path)
             contador += 1
     while next_page is not None:
         try:
@@ -80,6 +74,5 @@ with sync_playwright() as p:
                 "//*[@id='box-table-b']/tbody/tr[16]/th/form/a", has_text="Próxima").click()
         except:
             next_page = None
-    browser.close()
 tempoExec = time.time() - t1
 print("\nTempo de execução: {} segundos".format(tempoExec))

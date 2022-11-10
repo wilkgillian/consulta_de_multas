@@ -27,3 +27,17 @@ async def excel_generator_licenciamento(placa: str, licenciamento: str, data_ven
         page_docs.append([placa, licenciamento, data_vencimento])
         planilha.save(filename=path)
     pass
+
+
+async def excel_generator_condutores(motorista: str, data_vencimento: str, situacao: str, path: str):
+    planilha = load_workbook(path)
+    try:
+        page_docs = planilha['Motoristas']
+        page_docs.append([motorista, data_vencimento, situacao])
+        planilha.save(filename=path)
+    except:
+        planilha.create_sheet("Motoristas")
+        page_docs = planilha['Motoristas']
+        page_docs.append([motorista, data_vencimento, situacao])
+        planilha.save(filename=path)
+    pass
