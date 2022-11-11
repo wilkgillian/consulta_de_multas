@@ -51,4 +51,4 @@ async def extractor_denit(page: Page, context: BrowserContext, placa, path, orga
             cont += 1
     except:
         print(colored('Sem débitos no denit', 'green'))
-pass
+    pass

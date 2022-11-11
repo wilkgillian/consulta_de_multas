@@ -4,9 +4,9 @@ from datetime import datetime
 from dotenv import load_dotenv
 from termcolor import colored
 from playwright.async_api import async_playwright
-from connecta.Condutores_habilitados import condutores
-from connecta.conductors_cnh import conductors_cnh
+from connecta.condutores_habilitados import condutores
 from denit.newBuscadorDenit import buscador_denit
+
 from detran.buscadorDetran import buscador_detran
 from utils.sendNotification import post_message_to_teams
 
@@ -52,15 +52,20 @@ async def main():
         try:
             print(colored("<<<< Iniciando busca dos condutores habilitados >>>>",
                   'yellow', attrs=['reverse']))
-            await conductors_cnh(page=page, path=path)
+            await condutores(page=page, path=path)
             busca_cnh = 'Concluída'
         except:
             print(colored("Falha ao executar busca dos condutores",
                   "red", attrs=['reverse']))
             busca_cnh = 'Falhou'
         await browser.close()
-        # post_message_to_teams(message='[MENSAGEM DO ROBÔ 🤖]\n\nConsulta do dia '+str(
-        #     formatData)+':\n\nBusca no detran -> '+busca_detran+'\n\nBusca no denit -> '+busca_denit+'')
+        try:
+            post_message_to_teams(message='[MENSAGEM DO ROBÔ 🤖]\n\nConsulta do dia '+str(
+                formatData)+':\n\nBusca no detran -> '+busca_detran+'\n\nBusca no denit -> '+busca_denit+'\n\nBusca dos condutores -> '+busca_cnh+'')
+            print(colored('Mensagem enviada', 'green', attrs=['reverse']))
+        except:
+            print(colored('Falha ao enviar notificação',
+                  'red', attrs=['reverse']))
         print(colored("Busca finalizada...", 'blue', attrs=['reverse']))
 
 asyncio.run(main())
